@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <defs>
+    <radialGradient id="hero-bg" gradientUnits="userSpaceOnUse" cx="600" cy="0" r="780" fx="600" fy="0" gradientTransform="scale(1.35 1)">
+      <stop offset="0%" stop-color="#150520"/>
+      <stop offset="6%" stop-color="#220838"/>
+      <stop offset="14%" stop-color="#2f0f4a"/>
+      <stop offset="22%" stop-color="#3e165b"/>
+      <stop offset="30%" stop-color="#4d1280"/>
+      <stop offset="38%" stop-color="#580b97"/>
+      <stop offset="46%" stop-color="#6e22ad"/>
+      <stop offset="54%" stop-color="#8540c4"/>
+      <stop offset="62%" stop-color="#9d5fd4"/>
+      <stop offset="70%" stop-color="#b078e0"/>
+      <stop offset="78%" stop-color="#c49aed"/>
+      <stop offset="86%" stop-color="#dac2f4"/>
+      <stop offset="93%" stop-color="#efe4fa"/>
+      <stop offset="100%" stop-color="#ffffff"/>
+    </radialGradient>
+    <filter id="noise" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="4" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.18"/>
+      </feComponentTransfer>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#hero-bg)"/>
+  <rect width="1200" height="630" filter="url(#noise)" opacity="0.45"/>
+
+  <g transform="translate(80 58) scale(1.35)">
+    <path d="M23.7515 0.883662C25.3728 0.325401 27.8652 3.29448 29.3186 7.51533C30.0368 9.60111 30.3666 11.6022 30.3211 13.1604C32.572 12.3835 34.3011 11.5882 34.4795 11.5053C34.494 11.4735 34.5045 11.4507 34.5108 11.4372C34.7988 11.3292 35.002 11.4046 35.1188 11.5214C35.7962 12.1988 35.2292 15.0428 33.2704 17.4248C37.5029 20.3828 43.1758 22.5626 44.1615 22.9306C44.1736 22.9262 44.182 22.9231 44.1864 22.9215C44.5782 23.0902 44.848 23.342 44.9669 23.6872C45.5251 25.3085 42.556 27.801 38.3352 29.2544C36.303 29.9541 34.3511 30.2852 32.8111 30.2596C33.6385 32.6682 34.4948 34.4948 34.4948 34.4948C34.4948 34.4948 34.4904 34.4928 34.4818 34.4888C34.5869 34.7712 34.6249 34.9709 34.5096 35.0862C33.8322 35.7636 30.9286 35.2292 28.5465 33.2704C25.5833 37.5098 23.401 43.195 23.0383 44.167C23.0419 44.1767 23.0444 44.1834 23.0458 44.1871C22.8771 44.5787 22.6254 44.8482 22.2803 44.9671C20.659 45.5253 18.1665 42.5563 16.7131 38.3354C16.0147 36.307 15.6836 34.3587 15.7078 32.8199C13.4013 33.6138 11.6344 34.4314 11.5057 34.4913C11.5024 34.4987 11.4996 34.5049 11.4973 34.5098C11.2092 34.6178 10.995 34.6269 10.8781 34.5102C10.2008 33.8327 10.7417 30.9293 12.7004 28.5472C8.42854 25.5615 2.68897 23.3684 1.78241 23.031C1.76172 23.0386 1.74812 23.0438 1.74182 23.046C1.35008 22.8774 1.08034 22.6256 0.961484 22.2804C0.403228 20.6591 3.37231 18.1666 7.59315 16.7132C9.65016 16.005 11.6248 15.6743 13.1735 15.709C12.3493 13.3143 11.4995 11.501 11.4982 11.4983C11.4983 11.4983 11.5034 11.5006 11.513 11.5051C11.4053 11.2175 11.3963 11.0035 11.5129 10.8868C12.1909 10.2088 15.0349 10.7458 17.4181 12.7086C20.6714 8.05733 22.9851 1.66034 22.9851 1.66034C22.9851 1.66034 22.9854 1.66131 22.9861 1.66321C23.1547 1.27188 23.4065 1.00243 23.7515 0.883662Z" fill="#323232"/>
+    <path d="M1.65971 22.9858C1.65971 22.9858 10.9719 19.6181 15.2946 15.2953C19.6174 10.9725 22.9851 1.66035 22.9851 1.66035C22.9851 1.66035 26.3528 10.9725 30.6756 15.2953C34.9984 19.6181 44.3105 22.9858 44.3105 22.9858C44.3105 22.9858 34.9984 26.3534 30.6756 30.6762C26.3528 34.999 22.9851 44.3112 22.9851 44.3112C22.9851 44.3112 19.6174 34.999 15.2946 30.6762C10.9719 26.3534 1.65971 22.9858 1.65971 22.9858Z" fill="#700FBE" fill-opacity="0.5"/>
+    <path d="M11.4983 11.4983C11.4983 11.4983 18.335 14.7034 22.9965 14.7034C27.6581 14.7034 34.4948 11.4983 34.4948 11.4983C34.4948 11.4983 31.2897 18.335 31.2897 22.9966C31.2897 27.6581 34.4948 34.4948 34.4948 34.4948C34.4948 34.4948 27.6581 31.2897 22.9965 31.2897C18.335 31.2897 11.4983 34.4948 11.4983 34.4948C11.4983 34.4948 14.7034 27.6581 14.7034 22.9966C14.7034 18.335 11.4983 11.4983 11.4983 11.4983Z" fill="#700FBE" fill-opacity="0.5"/>
+    <path d="M19.7143 23.5476V25.1905H26.8333M19.7143 23.5476V21.9048H26.8333M19.7143 23.5476H21.7186M23.1383 23.5476H26.8333" stroke="white" stroke-opacity="0.9" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M56.8727 24.3321V32.7724H85.8486M56.8727 24.3321V15.8917H85.8486M56.8727 24.3321H65.0305M70.8091 24.3321H85.8486" stroke="white" stroke-width="4.36346" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M137.618 24.3321V32.7724H166.594M137.618 24.3321V15.8917H166.594M137.618 24.3321H145.776M151.554 24.3321H166.594" stroke="white" stroke-width="4.36346" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M247.335 15.8917H230.677H218.359V24.3321V32.7724H247.335V24.3321H241.738M233.186 24.3321H235.809" stroke="white" stroke-width="4.36346" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M97.2436 32.7727V26.1558M126.22 32.7727V30.0333M111.732 15.8917H126.22V24.103M111.732 15.8917H97.2436V20.2254M111.732 15.8917V32.7727" stroke="white" stroke-width="4.36346" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M177.988 32.7727V24.3322M177.988 24.3322V15.8917H184.831M177.988 24.3322H196.464M206.965 32.7727L200.293 27.4103L196.464 24.3322M196.464 24.3322H206.965V15.8917H190.876" stroke="white" stroke-width="4.36346" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M258.733 32.7727L287.71 15.8917M258.733 15.8917L279.034 27.7179M287.71 32.7727L283.823 30.5085" stroke="#60189B" stroke-width="4.36346" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <text x="80" y="250" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="68" font-weight="700" letter-spacing="-0.03em">
+    <tspan x="80" dy="0">Your Team Deserves Better</tspan>
+    <tspan x="80" dy="82">Hiring Automation</tspan>
+  </text>
+
+  <text x="80" y="430" fill="rgba(255,255,255,0.9)" font-family="system-ui, -apple-system, sans-serif" font-size="30" font-weight="400" letter-spacing="-0.01em">
+    <tspan x="80" dy="0">AI recruiting agents built for quality. Scale your hiring without</tspan>
+    <tspan x="80" dy="42">losing the human insight every great hire deserves.</tspan>
+  </text>
+
+  <text x="80" y="580" fill="rgba(255,255,255,0.55)" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="500">emergx.ai</text>
+</svg>

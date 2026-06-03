@@ -13,17 +13,15 @@ export default function Navbar() {
         className="pointer-events-auto mx-14 flex h-12 max-w-8xl items-center justify-between rounded-md border-2 border-white/20 bg-white/35 px-6 font-primary shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-md sm:px-8"
         aria-label="Main navigation"
       >
-        <Link href="/" className="flex items-center gap-2.5 font-primary">
+        <Link href="/" className="flex items-center font-primary">
           <Image
-            src="/icon.svg"
+            src="/Logo/Navbar_Logo.svg"
             alt={`${siteConfig.name} logo`}
-            width={24}
-            height={24}
+            width={177}
+            height={28}
+            className="h-7 w-auto"
             priority
           />
-          <span className="font-primary text-base font-medium tracking-tight text-white">
-            {siteConfig.name}
-          </span>
         </Link>
 
         <div className="flex items-center gap-6 font-primary">

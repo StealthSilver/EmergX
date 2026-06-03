@@ -1,71 +1,24 @@
 /**
- * Generates static SEO image assets in /public.
+ * Generates static SEO image assets in /public from public/icon.svg.
  * Run: node scripts/generate-seo-assets.mjs
  */
 
 import sharp from "sharp";
-import { writeFile, mkdir } from "node:fs/promises";
+import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const publicDir = join(__dirname, "..", "public");
+const iconSvgPath = join(publicDir, "icon.svg");
+const ogSvgPath = join(publicDir, "og-image.svg");
 
-const BRAND = {
-  bg: "#0a0a0a",
-  gradientStart: "#6366f1",
-  gradientEnd: "#8b5cf6",
-  text: "#ffffff",
-  muted: "rgba(255,255,255,0.72)",
-  name: "EmergX",
-  tagline: "Automated Hiring. Human Quality.",
-  subtitle: "Meet Eva, the AI interviewer.",
-  url: "emergx.ai",
-};
-
-function iconSvg(size) {
-  const radius = Math.round(size * 0.22);
-  const fontSize = Math.round(size * 0.47);
-  const y = Math.round(size * 0.625);
-  return Buffer.from(`
-    <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-      <defs>
-        <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="${BRAND.gradientStart}"/>
-          <stop offset="100%" stop-color="${BRAND.gradientEnd}"/>
-        </linearGradient>
-      </defs>
-      <rect width="${size}" height="${size}" rx="${radius}" fill="${BRAND.bg}"/>
-      <rect x="${size * 0.06}" y="${size * 0.06}" width="${size * 0.88}" height="${size * 0.88}" rx="${radius * 0.8}" fill="url(#g)"/>
-      <text x="50%" y="${y}" text-anchor="middle" font-family="system-ui,sans-serif" font-size="${fontSize}" font-weight="700" fill="${BRAND.text}">E</text>
-    </svg>
-  `);
+async function getIconSvgBuffer() {
+  return readFile(iconSvgPath);
 }
 
-function ogSvg() {
-  return Buffer.from(`
-    <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-      <defs>
-        <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#0a0a0a"/>
-          <stop offset="45%" stop-color="#171717"/>
-          <stop offset="100%" stop-color="#1a1a2e"/>
-        </linearGradient>
-        <linearGradient id="logo" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="${BRAND.gradientStart}"/>
-          <stop offset="100%" stop-color="${BRAND.gradientEnd}"/>
-        </linearGradient>
-      </defs>
-      <rect width="1200" height="630" fill="url(#bg)"/>
-      <rect x="80" y="72" width="56" height="56" rx="14" fill="url(#logo)"/>
-      <text x="108" y="108" text-anchor="middle" font-family="system-ui,sans-serif" font-size="28" font-weight="700" fill="#fff">E</text>
-      <text x="156" y="108" font-family="system-ui,sans-serif" font-size="36" font-weight="600" fill="#fff">${BRAND.name}</text>
-      <text x="80" y="340" font-family="system-ui,sans-serif" font-size="64" font-weight="700" fill="#fff">${BRAND.tagline.split(".")[0]}.</text>
-      <text x="80" y="410" font-family="system-ui,sans-serif" font-size="64" font-weight="700" fill="#fff">${BRAND.tagline.split(".")[1]?.trim()}.</text>
-      <text x="80" y="490" font-family="system-ui,sans-serif" font-size="28" fill="${BRAND.muted}">${BRAND.subtitle} Scale hiring without compromising on human quality.</text>
-      <text x="80" y="570" font-family="system-ui,sans-serif" font-size="24" fill="rgba(255,255,255,0.5)">${BRAND.url}</text>
-    </svg>
-  `);
+async function getOgSvgBuffer() {
+  return readFile(ogSvgPath);
 }
 
 async function writePngFromSvg(svg, outputPath, width, height) {
@@ -73,10 +26,10 @@ async function writePngFromSvg(svg, outputPath, width, height) {
   console.log(`Created ${outputPath}`);
 }
 
-async function writeIco(outputPath) {
+async function writeIco(iconSvg, outputPath) {
   const sizes = [16, 32, 48];
   const pngBuffers = await Promise.all(
-    sizes.map((size) => sharp(iconSvg(size)).resize(size, size).png().toBuffer()),
+    sizes.map((size) => sharp(iconSvg).resize(size, size).png().toBuffer()),
   );
 
   const imageCount = pngBuffers.length;
@@ -121,10 +74,13 @@ async function writeIco(outputPath) {
 async function main() {
   await mkdir(publicDir, { recursive: true });
 
-  await writePngFromSvg(iconSvg(96), join(publicDir, "favicon-96x96.png"), 96, 96);
-  await writePngFromSvg(iconSvg(180), join(publicDir, "apple-touch-icon.png"), 180, 180);
-  await writePngFromSvg(ogSvg(), join(publicDir, "og-image.png"), 1200, 630);
-  await writeIco(join(publicDir, "favicon.ico"));
+  const iconSvg = await getIconSvgBuffer();
+  const ogSvg = await getOgSvgBuffer();
+
+  await writePngFromSvg(iconSvg, join(publicDir, "favicon-96x96.png"), 96, 96);
+  await writePngFromSvg(iconSvg, join(publicDir, "apple-touch-icon.png"), 180, 180);
+  await writePngFromSvg(ogSvg, join(publicDir, "og-image.png"), 1200, 630);
+  await writeIco(iconSvg, join(publicDir, "favicon.ico"));
 }
 
 main().catch((error) => {
