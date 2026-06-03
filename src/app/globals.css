@@ -57,3 +57,61 @@ body {
   color: var(--foreground);
   font-family: var(--font-primary);
 }
+
+@keyframes hero-noise-jitter {
+  0% {
+    transform: translate(0, 0);
+    background-position: 0% 0%;
+  }
+  10% {
+    transform: translate(-5px, 4px);
+    background-position: 28% 22%;
+  }
+  20% {
+    transform: translate(6px, -5px);
+    background-position: -24% 32%;
+  }
+  30% {
+    transform: translate(-6px, -4px);
+    background-position: 36% -18%;
+  }
+  40% {
+    transform: translate(4px, 6px);
+    background-position: -32% 26%;
+  }
+  50% {
+    transform: translate(-4px, -6px);
+    background-position: 18% -28%;
+  }
+  60% {
+    transform: translate(5px, 3px);
+    background-position: -20% -22%;
+  }
+  70% {
+    transform: translate(-3px, 5px);
+    background-position: 30% 34%;
+  }
+  80% {
+    transform: translate(6px, -3px);
+    background-position: -26% 14%;
+  }
+  90% {
+    transform: translate(-5px, 2px);
+    background-position: 22% -30%;
+  }
+  100% {
+    transform: translate(0, 0);
+    background-position: 0% 0%;
+  }
+}
+
+.hero-noise {
+  animation: hero-noise-jitter 0.1s steps(1) infinite;
+  will-change: transform, background-position;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-noise {
+    animation: none;
+  }
+}
