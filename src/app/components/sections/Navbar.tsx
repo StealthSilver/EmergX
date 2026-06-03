@@ -8,20 +8,20 @@ const navLinks = [
 
 export default function Navbar() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-zinc-200/80 bg-white/80 font-primary backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-950/80">
+    <header className="pointer-events-none fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-6 lg:px-8">
       <nav
-        className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6 font-primary"
+        className="pointer-events-auto mx-14 flex h-12 max-w-8xl items-center justify-between rounded-md border-2 border-white/20 bg-white/35 px-6 font-primary shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-md sm:px-8"
         aria-label="Main navigation"
       >
         <Link href="/" className="flex items-center gap-2.5 font-primary">
           <Image
             src="/icon.svg"
             alt={`${siteConfig.name} logo`}
-            width={32}
-            height={32}
+            width={24}
+            height={24}
             priority
           />
-          <span className="font-primary text-lg font-medium tracking-tight text-zinc-900 dark:text-zinc-50">
+          <span className="font-primary text-base font-medium tracking-tight text-white">
             {siteConfig.name}
           </span>
         </Link>
@@ -31,7 +31,7 @@ export default function Navbar() {
             <Link
               key={href}
               href={href}
-              className="hidden font-primary text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900 sm:inline dark:text-zinc-400 dark:hover:text-zinc-50"
+              className="hidden font-primary text-sm font-medium text-white/80 transition-colors hover:text-white sm:inline"
             >
               {label}
             </Link>
@@ -39,7 +39,7 @@ export default function Navbar() {
 
           <Link
             href="#request-demo"
-            className="font-primary rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+            className="font-primary rounded-full bg-white px-3.5 py-1 text-sm font-medium text-[#3e165b] transition-colors hover:bg-white/90"
           >
             Request Demo
           </Link>

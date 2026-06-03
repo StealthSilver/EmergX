@@ -42,6 +42,7 @@
   --color-foreground: var(--foreground);
   --font-primary: "Satoshi", ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-primary);
+  --max-width-9xl: 96rem;
 }
 
 @media (prefers-color-scheme: dark) {
