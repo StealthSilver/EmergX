@@ -29,25 +29,25 @@ export default function Hero() {
         }}
       />
 
-      <div className="relative z-10 mx-auto flex h-full w-full max-w-4xl flex-1 flex-col items-center justify-center px-6 pb-24 pt-8 text-center sm:px-8 sm:pb-28">
+      <div className="relative z-10 mx-auto flex h-full w-full max-w-7xl flex-1 flex-col items-center justify-center px-6 pb-24 pt-8 text-center sm:px-8 sm:pb-28">
         <h1
           id="hero-heading"
-          className="font-primary text-4xl font-bold leading-[1.1] tracking-tight text-white sm:text-5xl md:text-6xl"
+          className="w-full max-w-5xl font-primary text-5xl font-bold leading-[1.3] tracking-tight text-balance text-white sm:max-w-6xl sm:text-6xl sm:leading-[1.35] md:max-w-7xl md:text-7xl md:leading-[1.4]"
         >
           Your Team Deserves Better
           <br />
           Hiring Automation
         </h1>
 
-        <p className="mt-6 max-w-2xl font-primary text-base leading-relaxed text-white/90 sm:text-lg">
+        <p className="mt-6 max-w-2xl font-primary text-xl leading-relaxed text-white/90 sm:text-2xl">
           AI recruiting agents built for quality. Scale your hiring without
           losing the human insight every great hire deserves.
         </p>
 
-        <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+        <div className="mt-12 flex flex-col items-center gap-4 sm:mt-14 sm:flex-row sm:justify-center">
           <Link
             href="#request-demo"
-            className="inline-flex min-w-[180px] items-center justify-center rounded-md bg-[#580b97] px-8 py-3.5 font-primary text-sm font-medium uppercase tracking-wide text-white transition-colors hover:bg-[#4a0a80]"
+            className="request-demo-btn inline-flex min-w-[180px] items-center justify-center rounded-md px-8 py-3.5 font-primary text-sm font-medium uppercase text-white transition-colors"
           >
             Request Demo
           </Link>
