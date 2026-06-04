@@ -31,7 +31,7 @@ export default function Hero() {
         }}
       />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col items-center justify-center px-6 pt-8 text-center sm:px-8">
+      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col items-center justify-center px-6 pb-16 pt-4 text-center sm:px-8 sm:pb-32 sm:pt-46">
         <h1
           id="hero-heading"
           className="w-full max-w-5xl font-primary text-5xl font-bold leading-[1.3] tracking-tight text-balance text-white sm:max-w-6xl sm:text-6xl sm:leading-[1.35] md:max-w-7xl md:text-7xl md:leading-[1.4]"
@@ -60,13 +60,15 @@ export default function Hero() {
             For Candidates
           </Link>
         </div>
-      </div>
 
-      <div className="relative z-10 w-full shrink-0 px-4 pb-8 pt-6 sm:px-8 sm:pb-10">
-        <p className="mb-6 text-center font-primary text-sm font-light text-black sm:mb-8 sm:text-base">
-          {trustedByHeading}
-        </p>
-        <LogoTicker />
+        <div className="mt-40 w-full sm:mt-32 md:mt-36">
+          <p className="mb-5 text-center font-primary text-sm font-light text-black sm:mb-6 sm:text-base">
+            {trustedByHeading}
+          </p>
+          <div className="mt-12 sm:mt-12">
+            <LogoTicker />
+          </div>
+        </div>
       </div>
     </section>
   );

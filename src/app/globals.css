@@ -77,26 +77,57 @@ body {
 }
 
 .logo-ticker-mask {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    rgb(0 0 0 / 0.4) 3%,
+    #000 6%,
+    #000 94%,
+    rgb(0 0 0 / 0.4) 97%,
+    transparent 100%
+  );
   mask-image: linear-gradient(
     to right,
-    transparent,
-    #000 10%,
-    #000 90%,
-    transparent
+    transparent 0%,
+    rgb(0 0 0 / 0.4) 3%,
+    #000 6%,
+    #000 94%,
+    rgb(0 0 0 / 0.4) 97%,
+    transparent 100%
   );
+  mask-mode: alpha;
+  -webkit-mask-mode: alpha;
+}
+
+.logo-ticker-item {
+  display: flex;
+  height: 34px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-ticker-image {
+  display: block;
+  height: 34px;
+  width: auto;
+  max-width: 130px;
+  object-fit: contain;
+  object-position: center;
 }
 
 .logo-ticker-track {
-  animation: logo-ticker-scroll 32s linear infinite;
+  gap: 6rem;
+  animation: logo-ticker-scroll 36s linear infinite;
   will-change: transform;
 }
 
 @keyframes logo-ticker-scroll {
   from {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
   to {
-    transform: translateX(-50%);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
