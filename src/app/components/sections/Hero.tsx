@@ -1,4 +1,6 @@
 import Link from "next/link";
+import LogoTicker from "@/app/components/sections/LogoTicker";
+import { trustedByHeading } from "@/lib/data/hero.data";
 
 const heroGradient =
   "radial-gradient(ellipse 120% 100% at 50% 0%, #150520 0%, #220838 6%, #2f0f4a 14%, #3e165b 22%, #4d1280 30%, #580b97 38%, #6e22ad 46%, #8540c4 54%, #9d5fd4 62%, #b078e0 70%, #c49aed 78%, #dac2f4 86%, #efe4fa 93%, #ffffff 100%)";
@@ -29,7 +31,7 @@ export default function Hero() {
         }}
       />
 
-      <div className="relative z-10 mx-auto flex h-full w-full max-w-7xl flex-1 flex-col items-center justify-center px-6 pb-24 pt-8 text-center sm:px-8 sm:pb-28">
+      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col items-center justify-center px-6 pt-8 text-center sm:px-8">
         <h1
           id="hero-heading"
           className="w-full max-w-5xl font-primary text-5xl font-bold leading-[1.3] tracking-tight text-balance text-white sm:max-w-6xl sm:text-6xl sm:leading-[1.35] md:max-w-7xl md:text-7xl md:leading-[1.4]"
@@ -58,6 +60,13 @@ export default function Hero() {
             For Candidates
           </Link>
         </div>
+      </div>
+
+      <div className="relative z-10 w-full shrink-0 px-4 pb-8 pt-6 sm:px-8 sm:pb-10">
+        <p className="mb-6 text-center font-primary text-sm font-light text-black sm:mb-8 sm:text-base">
+          {trustedByHeading}
+        </p>
+        <LogoTicker />
       </div>
     </section>
   );

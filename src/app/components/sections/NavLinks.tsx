@@ -58,7 +58,7 @@ export default function NavLinks() {
     >
       <span
         aria-hidden
-        className="nav-slide-indicator pointer-events-none absolute rounded-md border border-white/5"
+        className="nav-slide-indicator pointer-events-none absolute rounded-md border border-white/[0.03]"
         style={{
           left: indicator.left,
           top: indicator.top,
