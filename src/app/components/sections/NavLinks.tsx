@@ -51,14 +51,13 @@ export default function NavLinks() {
   }, []);
 
   return (
-    <ul
-      ref={listRef}
-      className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-3 sm:gap-4"
+    <div
+      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
       onMouseLeave={hideIndicator}
     >
       <span
         aria-hidden
-        className="nav-slide-indicator pointer-events-none absolute rounded-md border border-white/[0.03]"
+        className="pointer-events-none absolute rounded-md border border-white/[0.06] bg-white/[0.02] transition-[left,width,height,opacity] duration-300 ease-out"
         style={{
           left: indicator.left,
           top: indicator.top,
@@ -67,19 +66,24 @@ export default function NavLinks() {
           opacity: indicator.opacity,
         }}
       />
-      {navLinks.map(({ label, href }) => (
-        <li key={href} className="relative z-10">
-          <Link
-            href={href}
-            className="relative block px-2.5 py-1 font-primary text-sm font-light uppercase text-[#FFFFFF] sm:px-3"
-            onMouseEnter={(e) => moveIndicator(e.currentTarget)}
-            onFocus={(e) => moveIndicator(e.currentTarget)}
-            onBlur={hideIndicator}
-          >
-            {label}
-          </Link>
-        </li>
-      ))}
-    </ul>
+      <ul
+        ref={listRef}
+        className="relative z-10 flex items-center gap-3 sm:gap-4"
+      >
+        {navLinks.map(({ label, href }) => (
+          <li key={href}>
+            <Link
+              href={href}
+              className="relative block px-2.5 py-1 font-primary text-sm font-light uppercase text-[#FFFFFF] sm:px-3"
+              onMouseEnter={(e) => moveIndicator(e.currentTarget)}
+              onFocus={(e) => moveIndicator(e.currentTarget)}
+              onBlur={hideIndicator}
+            >
+              {label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

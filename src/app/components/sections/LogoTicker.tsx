@@ -1,13 +1,26 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 import { trustedLogos } from "@/lib/data/hero.data";
 
 const tickerLogos = [...trustedLogos, ...trustedLogos];
 
 export default function LogoTicker() {
+  const [isPaused, setIsPaused] = useState(false);
+
   return (
-    <div className="logo-ticker-wrap relative w-full" aria-label="Trusted company logos">
+    <div
+      className="logo-ticker-wrap relative w-full"
+      aria-label="Trusted company logos"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       <div className="logo-ticker-mask relative w-full overflow-hidden">
-        <div className="logo-ticker-track flex w-max items-center">
+        <div
+          className={`logo-ticker-track flex w-max items-center${isPaused ? " is-paused" : ""}`}
+          style={{ animationPlayState: isPaused ? "paused" : "running" }}
+        >
           {tickerLogos.map((logo, index) => (
             <div
               key={`${logo.name}-${index}`}

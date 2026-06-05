@@ -3,7 +3,7 @@ import LogoTicker from "@/app/components/sections/LogoTicker";
 import { trustedByHeading } from "@/lib/data/hero.data";
 
 const heroGradient =
-  "radial-gradient(ellipse 120% 100% at 50% 0%, #150520 0%, #220838 6%, #2f0f4a 14%, #3e165b 22%, #4d1280 30%, #580b97 38%, #6e22ad 46%, #8540c4 54%, #9d5fd4 62%, #b078e0 70%, #c49aed 78%, #dac2f4 86%, #efe4fa 93%, #ffffff 100%)";
+  "radial-gradient(ellipse 120% 100% at 50% 0%, #150520 0%, #220838 6%, #2f0f4a 14%, #3e165b 22%, #4d1280 30%, #580b97 38%, #6e22ad 46%, #8540c4 54%, #9d5fd4 62%, #b078e0 70%, #c49aed 76%, #dac2f4 82%, #efe4fa 87%, #ffffff 92%, #ffffff 100%)";
 
 const noiseOverlay = `url("data:image/svg+xml,${encodeURIComponent(
   `<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256">
@@ -61,8 +61,8 @@ export default function Hero() {
           </Link>
         </div>
 
-        <div className="mt-40 w-full sm:mt-32 md:mt-36">
-          <p className="mb-5 text-center font-primary text-sm font-light text-black sm:mb-6 sm:text-base">
+        <div className="mt-48 w-full sm:mt-52 md:mt-56">
+          <p className="mb-5 text-center font-primary text-sm font-normal text-black sm:mb-6 sm:text-base">
             {trustedByHeading}
           </p>
           <div className="mt-12 sm:mt-12">
