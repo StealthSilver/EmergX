@@ -1,43 +1,73 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import ScrollHighlightWord from "@/app/components/sections/ScrollHighlightWord";
 import { platformContent } from "@/lib/data/platform.data";
+import { useElementScrollProgress } from "@/lib/hooks/useElementScrollProgress";
+
+const HIGHLIGHT_WORD_COUNT = 5;
 
 export default function Platform() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const scrollTrackRef = useRef<HTMLDivElement>(null);
+  const scrollProgress = useElementScrollProgress(scrollTrackRef);
 
   return (
     <section
       id="platform"
-      className="scroll-mt-24 flex min-h-[100vh] w-full flex-col items-center justify-center bg-white px-7 py-5 pt-10 font-primary text-gray-900"
+      className="scroll-mt-24 w-full bg-white px-7 font-primary text-gray-900"
       aria-labelledby="platform-heading"
     >
-      <p id="platform-heading" className="w-[90%] text-4xl leading-relaxed">
-        EmergX is the only platform where candidates are{" "}
-        <span className="bg-[#580B97] px-2 font-semibold text-white">
-          sourced
-        </span>
-        ,{" "}
-        <span className="bg-[#580B97] px-2 font-semibold text-white">
-          evaluated
-        </span>{" "}
-        and{" "}
-        <span className="bg-[#580B97] px-2 font-semibold text-white">
-          verified
-        </span>
-        . The result?{" "}
-        <span className="bg-[#580B97] px-2 font-semibold text-white">
-          Faster hires
-        </span>
-        ,{" "}
-        <span className="bg-[#580B97] px-2 font-semibold text-white">
-          real talent
-        </span>{" "}
-        insight and value that&apos;s built, <br />
-        not burned.
-      </p>
+      <div ref={scrollTrackRef} className="relative h-[250vh] w-full">
+        <div className="sticky top-0 flex h-screen w-full items-center justify-center">
+          <p id="platform-heading" className="w-[90%] text-4xl leading-relaxed">
+            EmergX is the only platform where candidates are{" "}
+            <ScrollHighlightWord
+              wordIndex={0}
+              totalWords={HIGHLIGHT_WORD_COUNT}
+              scrollProgress={scrollProgress}
+            >
+              sourced
+            </ScrollHighlightWord>
+            ,{" "}
+            <ScrollHighlightWord
+              wordIndex={1}
+              totalWords={HIGHLIGHT_WORD_COUNT}
+              scrollProgress={scrollProgress}
+            >
+              evaluated
+            </ScrollHighlightWord>{" "}
+            and{" "}
+            <ScrollHighlightWord
+              wordIndex={2}
+              totalWords={HIGHLIGHT_WORD_COUNT}
+              scrollProgress={scrollProgress}
+            >
+              verified
+            </ScrollHighlightWord>
+            . The result?{" "}
+            <ScrollHighlightWord
+              wordIndex={3}
+              totalWords={HIGHLIGHT_WORD_COUNT}
+              scrollProgress={scrollProgress}
+            >
+              Faster hires
+            </ScrollHighlightWord>
+            ,{" "}
+            <ScrollHighlightWord
+              wordIndex={4}
+              totalWords={HIGHLIGHT_WORD_COUNT}
+              scrollProgress={scrollProgress}
+            >
+              real talent
+            </ScrollHighlightWord>{" "}
+            insight and value that&apos;s built, <br />
+            not burned.
+          </p>
+        </div>
+      </div>
 
-      <div className="mt-16 w-[90%]">
+      <div className="mx-auto w-[90%] pb-20">
         {platformContent.map((item, index) => (
           <div key={item.title} className="border-b border-gray-200 py-4">
             <button
