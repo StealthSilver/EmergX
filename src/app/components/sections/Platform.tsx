@@ -67,7 +67,8 @@ export default function Platform() {
         </div>
       </div>
 
-      <div className="mx-auto w-[90%] pb-20">
+      <div className="-mt-12 flex w-full justify-end px-7 pb-20">
+        <div className="w-[70%]">
         {platformContent.map((item, index) => (
           <div key={item.title} className="border-b border-gray-200 py-4">
             <button
@@ -103,6 +104,7 @@ export default function Platform() {
             </div>
           </div>
         ))}
+        </div>
       </div>
     </section>
   );
