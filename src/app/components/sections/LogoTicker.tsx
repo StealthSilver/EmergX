@@ -32,6 +32,7 @@ export default function LogoTicker() {
                 width={logo.width}
                 height={logo.height}
                 className="logo-ticker-image"
+                style={{ width: "auto" }}
                 draggable={false}
                 aria-hidden={index >= trustedLogos.length ? true : undefined}
               />
