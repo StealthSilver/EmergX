@@ -186,4 +186,154 @@ body {
   .logo-ticker-track {
     animation: none;
   }
+
+  .platform-row,
+  .platform-icon-box {
+    opacity: 1;
+    transform: none;
+  }
+
+  .platform-row-panel {
+    transition: none;
+  }
+}
+
+/* Platform accordion — Sui-inspired layout */
+.platform-accordion {
+  display: flex;
+  flex-direction: column;
+}
+
+.platform-tabs-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.platform-tabs-rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.tabs_wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 0.5rem 0.5rem 0;
+}
+
+.tabs_wrapper.first_section {
+  padding-top: 0;
+}
+
+.tabs_content {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.content_divider {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 3.75rem;
+}
+
+@keyframes platform-icon-reveal {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes platform-row-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.platform-icon-box {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  background-color: #580b97;
+  opacity: 0;
+  transform: scale(0.85);
+}
+
+.platform-icon-box--visible {
+  animation: platform-icon-reveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.platform-row {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.platform-row--visible {
+  animation: platform-row-reveal 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.platform-row-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.35s ease;
+}
+
+.platform-row-panel--open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.platform-row-panel > .platform-row-list {
+  overflow: hidden;
+}
+
+.platform-row-list {
+  margin: 0;
+  padding: 0.75rem 0 0.5rem 1.25rem;
+  list-style: none;
+  color: #6c7584;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.platform-row-list li {
+  position: relative;
+  padding-left: 0.75rem;
+}
+
+.platform-row-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.65em;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: #a1a7b2;
+}
+
+.platform-row-list li + li {
+  margin-top: 0.5rem;
 }
