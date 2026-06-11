@@ -5,6 +5,7 @@ import { useEffect, useState, type RefObject } from "react";
 export function useInView(
   ref: RefObject<HTMLElement | null>,
   threshold = 0.2,
+  replay = false,
 ) {
   const [isInView, setIsInView] = useState(false);
 
@@ -23,6 +24,11 @@ export function useInView(
 
     const observer = new IntersectionObserver(
       ([entry]) => {
+        if (replay) {
+          setIsInView(entry.isIntersecting);
+          return;
+        }
+
         if (entry.isIntersecting) {
           setIsInView(true);
           observer.disconnect();
@@ -34,7 +40,7 @@ export function useInView(
     observer.observe(element);
 
     return () => observer.disconnect();
-  }, [ref, threshold]);
+  }, [ref, threshold, replay]);
 
   return isInView;
 }
