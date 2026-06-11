@@ -51,17 +51,20 @@ export const FOOTER_SOCIAL_LIST =
 export const FOOTER_SOCIAL_BUTTON =
   "inline-flex size-9 items-center justify-center rounded-xl text-white transition-colors duration-150 ease-linear hover:text-white/90 sm:size-10";
 
-/** Wrapper for footer content + in-flow overscroll runway (sui.io scroll_footer). */
+/** Outer wrapper — sui.io scroll_footer (footer content + custom_scroll runway). */
 export const FOOTER_SCROLL_SHELL =
-  "footer-scroll-shell relative z-[2] overflow-visible bg-black";
+  "footer-scroll-shell relative z-[2] bg-black";
 
-/** In-flow overscroll zone — adds scroll distance below footer content. */
+export const FOOTER_CONTENT =
+  "footer-content relative z-[1] px-7 pb-12 pt-20 font-primary text-white sm:px-10 sm:pb-14 sm:pt-24 md:px-14";
+
+/** In-flow overscroll zone — 30vh runway below footer content (matches sui.io). */
 export const FOOTER_CUSTOM_SCROLL =
-  "footer-custom-scroll pointer-events-none relative z-0 flex h-[30vh] w-full items-end justify-center overflow-hidden bg-black";
+  "footer-custom-scroll pointer-events-none relative z-0 flex h-[30vh] w-full items-end justify-center overflow-visible bg-black";
 
 export const FOOTER_OVERSCROLL_EXPANDER =
-  "relative block w-full min-w-0 overflow-visible aspect-[1481/535]";
+  "footer-scroll-expander relative block w-full min-w-0 overflow-visible";
 
-/** Rebound gradient layer — path-morphed from bottom on overscroll. */
+/** Rebound gradient layer — flat bars morph on scroll through custom_scroll. */
 export const FOOTER_REBOUND_GRAPHIC =
-  "pointer-events-none relative block aspect-[1481/535] w-full min-w-0 overflow-hidden will-change-transform";
+  "footer-rebound-effect pointer-events-none relative block aspect-[1481/535] w-full min-w-0 overflow-visible will-change-transform";

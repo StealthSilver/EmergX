@@ -41,6 +41,18 @@
   --platform-rows-progress: 0;
   --curtain-scroll-progress: 0;
   --nav-text-mix: 0;
+  --rebound-purple-50: #efe4fa;
+  --rebound-purple-100: #dac2f4;
+  --rebound-purple-200: #c49aed;
+  --rebound-purple-300: #b078e0;
+  --rebound-purple-400: #9d5fd4;
+  --rebound-purple-500: #8540c4;
+  --rebound-purple-600: #6e22ad;
+  --rebound-purple-700: #580b97;
+  --rebound-purple-800: #4d1280;
+  --rebound-purple-900: #3e165b;
+  --rebound-purple-950: #220838;
+  --rebound-accent: #60189b;
 }
 
 @theme inline {
@@ -79,6 +91,28 @@ body::after {
   background-color: #000;
   pointer-events: none;
   z-index: -1;
+}
+
+.footer-custom-scroll {
+  z-index: 0;
+}
+
+.footer-scroll-expander {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.footer-rebound-effect {
+  display: block;
+  overflow: visible;
+  pointer-events: none;
+}
+
+@media screen and (max-width: 479px) {
+  .footer-custom-scroll {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

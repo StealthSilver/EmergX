@@ -15,6 +15,7 @@ import {
   FOOTER_BOTTOM_LEFT,
   FOOTER_CONTACT_BLOCK,
   FOOTER_CONTACT_LINK,
+  FOOTER_CONTENT,
   FOOTER_CUSTOM_SCROLL,
   FOOTER_LOWER,
   FOOTER_MAX_WIDTH,
@@ -65,11 +66,9 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className={FOOTER_SCROLL_SHELL} aria-labelledby="footer-heading">
-      <div
-        id="contact"
-        className="relative z-[1] px-7 pb-12 pt-20 font-primary text-white sm:px-10 sm:pb-14 sm:pt-24 md:px-14"
-      >
+    <div className={FOOTER_SCROLL_SHELL}>
+      <footer aria-labelledby="footer-heading">
+        <div id="contact" className={FOOTER_CONTENT}>
         <div className={`${FOOTER_MAX_WIDTH} ${FOOTER_LOWER}`}>
           <div className={FOOTER_TOP}>
             <div className={FOOTER_TOP_LEFT}>
@@ -167,13 +166,14 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-      </div>
+        </div>
+      </footer>
 
       <div ref={trackRef} className={FOOTER_CUSTOM_SCROLL} aria-hidden>
         <div className={FOOTER_OVERSCROLL_EXPANDER}>
           <FooterReboundGraphic progress={progress} />
         </div>
       </div>
-    </footer>
+    </div>
   );
 }

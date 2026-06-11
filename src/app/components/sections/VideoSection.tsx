@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { subscribeCurtainProgress } from "@/lib/scroll/scrollProgressStore";
+import {
+  CURTAIN_VIDEO_REVEAL_START,
+  subscribeCurtainProgress,
+} from "@/lib/scroll/scrollProgressStore";
 
 const ACCENT_COLOR = "#60189b";
-const CURTAIN_VIDEO_PLAY_THRESHOLD = 0.12;
 
 type VideoSectionProps = {
   behindCurtain?: boolean;
@@ -19,10 +21,11 @@ export default function VideoSection({ behindCurtain = false }: VideoSectionProp
 
     if (behindCurtain) {
       return subscribeCurtainProgress((progress) => {
-        if (progress >= CURTAIN_VIDEO_PLAY_THRESHOLD) {
+        if (progress >= CURTAIN_VIDEO_REVEAL_START) {
           void video.play().catch(() => undefined);
         } else {
           video.pause();
+          video.currentTime = 0;
         }
       });
     }
@@ -47,7 +50,7 @@ export default function VideoSection({ behindCurtain = false }: VideoSectionProp
       id="demo-video"
       className={
         behindCurtain
-          ? "flex min-h-screen w-full items-center bg-black px-7 py-16 font-primary text-white sm:py-20"
+          ? "flex h-full w-full items-center justify-center bg-black px-5 py-8 font-primary text-white sm:px-7"
           : "w-full bg-black px-7 py-24 font-primary text-white sm:py-32"
       }
       aria-labelledby="video-section-heading"
@@ -57,26 +60,58 @@ export default function VideoSection({ behindCurtain = false }: VideoSectionProp
           : { contentVisibility: "auto", containIntrinsicSize: "0 900px" }
       }
     >
-      <div className="mx-auto flex w-full max-w-6xl flex-col items-center text-center">
+      <div
+        className={
+          behindCurtain
+            ? "mx-auto flex w-full max-w-4xl flex-col items-center text-center"
+            : "mx-auto flex w-full max-w-6xl flex-col items-center text-center"
+        }
+      >
         <h2
           id="video-section-heading"
-          className="text-4xl font-medium leading-tight tracking-tight sm:text-5xl md:text-6xl"
+          className={
+            behindCurtain
+              ? "text-2xl font-medium leading-tight tracking-tight sm:text-3xl md:text-4xl"
+              : "text-4xl font-medium leading-tight tracking-tight sm:text-5xl md:text-6xl"
+          }
         >
           Hiring Revolutionised
         </h2>
 
-        <div className="mt-6 flex items-center justify-center gap-3 sm:mt-8">
+        <div
+          className={
+            behindCurtain
+              ? "mt-3 flex items-center justify-center gap-2 sm:mt-4"
+              : "mt-6 flex items-center justify-center gap-3 sm:mt-8"
+          }
+        >
           <span
-            className="inline-block size-3 shrink-0 sm:size-3.5"
+            className={
+              behindCurtain
+                ? "inline-block size-2.5 shrink-0"
+                : "inline-block size-3 shrink-0 sm:size-3.5"
+            }
             style={{ backgroundColor: ACCENT_COLOR }}
             aria-hidden
           />
-          <p className="text-base text-white/80 sm:text-lg">
+          <p
+            className={
+              behindCurtain
+                ? "text-sm text-white/80 sm:text-base"
+                : "text-base text-white/80 sm:text-lg"
+            }
+          >
             The complete workflow of the application
           </p>
         </div>
 
-        <div className="video-glass-frame relative mt-12 w-full sm:mt-16">
+        <div
+          className={
+            behindCurtain
+              ? "video-glass-frame relative mt-6 w-full sm:mt-8"
+              : "video-glass-frame relative mt-12 w-full sm:mt-16"
+          }
+        >
           <div
             className="pointer-events-none absolute -inset-px rounded-[1.75rem] opacity-70"
             aria-hidden

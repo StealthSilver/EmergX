@@ -93,6 +93,21 @@ function recolorBlueToAccent(imageData: ImageData) {
   }
 }
 
+/** Opaque black in source frames must be transparent so children show through the opening. */
+function punchOutDarkBackground(imageData: ImageData) {
+  const { data } = imageData;
+
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+
+    if (r + g + b < 48) {
+      data[i + 3] = 0;
+    }
+  }
+}
+
 function applyMetallicPurpleBars(imageData: ImageData) {
   const { data, width, height } = imageData;
 
@@ -167,6 +182,7 @@ function processFrame(source: HTMLImageElement): HTMLCanvasElement {
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
   recolorBlueToAccent(imageData);
   applyMetallicPurpleBars(imageData);
+  punchOutDarkBackground(imageData);
   ctx.putImageData(imageData, 0, 0);
 
   return canvas;
@@ -282,7 +298,7 @@ export default function CurtainDivider({ children }: CurtainDividerProps) {
     lastFrameIndexRef.current = frameIndex;
 
     const cache = processedFramesRef.current;
-    const processed = cache.get(frameIndex);
+    let processed = cache.get(frameIndex);
     const source = images[frameIndex];
 
     const ctx = canvas.getContext("2d", {
@@ -314,14 +330,15 @@ export default function CurtainDivider({ children }: CurtainDividerProps) {
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = "medium";
 
-    const bitmap = processed ?? (source?.complete ? source : null);
-    if (!bitmap) return;
-
-    ctx.drawImage(bitmap, 0, 0, displayWidth, displayHeight);
-
-    if (!processed) {
-      enqueuePreload([frameIndex]);
+    if (!processed && source?.complete && source.naturalWidth > 0) {
+      processed = processFrame(source);
+      cache.set(frameIndex, processed);
     }
+
+    if (!processed) return;
+
+    ctx.clearRect(0, 0, displayWidth, displayHeight);
+    ctx.drawImage(processed, 0, 0, displayWidth, displayHeight);
 
     enqueuePreload([
       frameIndex,
@@ -420,10 +437,10 @@ export default function CurtainDivider({ children }: CurtainDividerProps) {
       ref={scrollTrackRef}
       className={SCROLL_TRACK_CLASS}
     >
-      <div className="sticky top-0 h-screen w-full overflow-hidden bg-white">
+      <div className="sticky top-0 z-30 h-screen w-full overflow-hidden bg-black">
         <div
           data-curtain-content=""
-          className="absolute inset-0 origin-center bg-black opacity-0 will-change-[opacity,transform]"
+          className="absolute inset-0 z-0 origin-center bg-black opacity-0 will-change-[opacity,transform]"
           suppressHydrationWarning
         >
           {children}
@@ -431,7 +448,7 @@ export default function CurtainDivider({ children }: CurtainDividerProps) {
 
         <canvas
           ref={canvasRef}
-          className="pointer-events-none absolute inset-0 h-full w-full will-change-[contents]"
+          className="pointer-events-none absolute inset-0 z-10 h-full w-full will-change-[contents]"
           aria-hidden
         />
       </div>

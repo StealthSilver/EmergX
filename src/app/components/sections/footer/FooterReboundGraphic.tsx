@@ -21,13 +21,13 @@ export interface FooterReboundGraphicProps {
 }
 
 const REBOUND_BAR_COLOR_STOPS = [
-  { top: "#efe4fa", mid: "#b078e0", base: "#580b97" },
-  { top: "#dac2f4", mid: "#9d5fd4", base: "#4d1280" },
-  { top: "#c49aed", mid: "#8540c4", base: "#3e165b" },
-  { top: "#f5ecfc", mid: "#c49aed", base: "#60189b" },
-  { top: "#dac2f4", mid: "#9d5fd4", base: "#4d1280" },
-  { top: "#c49aed", mid: "#8540c4", base: "#3e165b" },
-  { top: "#b078e0", mid: "#6e22ad", base: "#220838" },
+  { top: "var(--rebound-purple-50)", mid: "var(--rebound-purple-300)", base: "var(--rebound-purple-700)" },
+  { top: "var(--rebound-purple-100)", mid: "var(--rebound-purple-400)", base: "var(--rebound-purple-800)" },
+  { top: "var(--rebound-purple-200)", mid: "var(--rebound-purple-500)", base: "var(--rebound-purple-900)" },
+  { top: "var(--rebound-purple-50)", mid: "var(--rebound-purple-200)", base: "var(--rebound-accent)" },
+  { top: "var(--rebound-purple-100)", mid: "var(--rebound-purple-400)", base: "var(--rebound-purple-800)" },
+  { top: "var(--rebound-purple-200)", mid: "var(--rebound-purple-500)", base: "var(--rebound-purple-900)" },
+  { top: "var(--rebound-purple-300)", mid: "var(--rebound-purple-600)", base: "var(--rebound-purple-950)" },
 ] as const;
 
 const REBOUND_DOT_PATHS = [
@@ -64,7 +64,7 @@ export default function FooterReboundGraphic({
   const barNoiseOpacity = reveal * clamp(0.18 + progress * 0.18, 0.18, 0.36);
   const dotOpacity = reveal;
 
-  if (reveal < 0.02) return null;
+  if (reveal <= 0) return null;
 
   return (
     <div
@@ -85,7 +85,7 @@ export default function FooterReboundGraphic({
         className="absolute inset-x-0 bottom-0 h-full w-full"
         style={{
           backgroundImage:
-            "radial-gradient(92% 160% at 50% 106%, rgba(188, 132, 238, 0.58) 0%, rgba(133, 64, 196, 0.42) 26%, rgba(96, 24, 155, 0.28) 46%, rgba(61, 18, 91, 0.14) 62%, rgba(2, 8, 22, 0) 100%)",
+            "radial-gradient(92% 160% at 50% 106%, color-mix(in srgb, var(--rebound-purple-300) 58%, transparent) 0%, color-mix(in srgb, var(--rebound-purple-500) 42%, transparent) 26%, color-mix(in srgb, var(--rebound-accent) 28%, transparent) 46%, color-mix(in srgb, var(--rebound-purple-900) 14%, transparent) 62%, rgba(2, 8, 22, 0) 100%)",
           filter: "blur(18px) saturate(132%)",
           opacity: glowOpacity,
         }}
@@ -95,7 +95,7 @@ export default function FooterReboundGraphic({
         className="absolute inset-x-0 bottom-0 h-full w-full"
         style={{
           backgroundImage:
-            "radial-gradient(70% 120% at 50% 102%, rgba(157, 95, 212, 0.38) 0%, rgba(96, 24, 155, 0.24) 44%, rgba(0, 0, 0, 0) 100%)",
+            "radial-gradient(70% 120% at 50% 102%, color-mix(in srgb, var(--rebound-purple-400) 38%, transparent) 0%, color-mix(in srgb, var(--rebound-accent) 24%, transparent) 44%, rgba(0, 0, 0, 0) 100%)",
           filter: "blur(22px) saturate(138%)",
           mixBlendMode: "screen",
           opacity: bloomOpacity,
@@ -103,7 +103,7 @@ export default function FooterReboundGraphic({
       />
       <div
         aria-hidden
-        className="absolute inset-x-0 bottom-0 h-full w-full text-[#b078e0]"
+        className="absolute inset-x-0 bottom-0 h-full w-full text-[var(--rebound-purple-300)]"
       >
         <svg
           className="absolute inset-0 h-full w-full overflow-visible"
@@ -140,9 +140,9 @@ export default function FooterReboundGraphic({
             ))}
             <linearGradient id="barSheenGradient" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop stopColor="#ffffff" stopOpacity="0.3" offset="0%" />
-              <stop stopColor="#dac2f4" stopOpacity="0.12" offset="42%" />
-              <stop stopColor="#b078e0" stopOpacity="0.08" offset="72%" />
-              <stop stopColor="#60189b" stopOpacity="0.04" offset="100%" />
+              <stop stopColor="var(--rebound-purple-100)" stopOpacity="0.12" offset="42%" />
+              <stop stopColor="var(--rebound-purple-300)" stopOpacity="0.08" offset="72%" />
+              <stop stopColor="var(--rebound-accent)" stopOpacity="0.04" offset="100%" />
             </linearGradient>
             <mask id="barNoiseMask">
               <rect x="0" y="0" width="1481" height="535" fill="black" />
@@ -151,7 +151,7 @@ export default function FooterReboundGraphic({
               ))}
             </mask>
           </defs>
-          <g>
+          <g className="rebound_blocks">
             {blockPaths.map((path, index) => (
               <path
                 key={path}
@@ -181,7 +181,7 @@ export default function FooterReboundGraphic({
             mask="url(#barNoiseMask)"
             opacity={barNoiseOpacity}
           />
-          <g style={{ opacity: dotOpacity }}>
+          <g className="rebound_dots" style={{ opacity: dotOpacity }}>
             {REBOUND_DOT_PATHS.map((line) => (
               <path
                 key={line.d}

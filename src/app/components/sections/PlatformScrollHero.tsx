@@ -54,8 +54,7 @@ export default function PlatformScrollHero() {
             >
               real talent
             </ScrollHighlightWord>{" "}
-            insight and value that&apos;s built, <br />
-            not burned.
+            insight and value that&apos;s built, not burned.
           </p>
 
           <PlatformRows />

@@ -9,9 +9,9 @@ export const CURTAIN_TRACK_ID = "curtain-divider";
 /** @deprecated Use PLATFORM_SCROLL_TRACK_ID from platformScrollConstants */
 export const PLATFORM_HEADING_SCROLL_ID = PLATFORM_SCROLL_TRACK_ID;
 
-/** Content behind the curtain starts revealing once the bars open past the viewport edge. */
-const CURTAIN_REVEAL_START = 0.08;
-const CURTAIN_REVEAL_END = 0.32;
+/** Video/content behind the curtain reveals once the bars are ~90% open. */
+export const CURTAIN_VIDEO_REVEAL_START = 0.9;
+const CURTAIN_REVEAL_END = 1;
 const PROGRESS_EPSILON = 0.0005;
 
 type ScrollSnapshot = {
@@ -150,10 +150,11 @@ function updateHighlightWords(progress: number) {
 }
 
 function curtainRevealProgress(progress: number) {
-  if (progress < CURTAIN_REVEAL_START) return 0;
+  if (progress < CURTAIN_VIDEO_REVEAL_START) return 0;
   return Math.min(
     1,
-    (progress - CURTAIN_REVEAL_START) / (CURTAIN_REVEAL_END - CURTAIN_REVEAL_START),
+    (progress - CURTAIN_VIDEO_REVEAL_START) /
+      (CURTAIN_REVEAL_END - CURTAIN_VIDEO_REVEAL_START),
   );
 }
 
@@ -173,7 +174,7 @@ function updateCurtainContent(progress: number) {
 
   if (getPrefersReducedMotion()) {
     curtainContentEl.style.opacity =
-      progress >= CURTAIN_REVEAL_START ? "1" : "0";
+      progress >= CURTAIN_VIDEO_REVEAL_START ? "1" : "0";
     curtainContentEl.style.transform = "scale(1)";
     return;
   }
