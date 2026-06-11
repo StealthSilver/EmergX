@@ -17,7 +17,7 @@ export default function PlatformScrollHero() {
         <div className="px-3 pt-40 sm:px-4">
           <p
             id="platform-heading"
-            className="ml-14 w-[90%] max-w-8xl text-5xl leading-tight sm:ml-16 sm:text-6xl lg:ml-20"
+            className="ml-14 w-[90%] max-w-8xl text-4xl leading-tight sm:ml-16 sm:text-5xl lg:ml-20"
           >
             EmergX is the only platform where candidates are{" "}
             <ScrollHighlightWord
@@ -57,9 +57,9 @@ export default function PlatformScrollHero() {
             insight and value that&apos;s built, <br />
             not burned.
           </p>
-        </div>
 
-        <PlatformRows />
+          <PlatformRows />
+        </div>
       </div>
     </div>
   );

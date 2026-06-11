@@ -9,8 +9,9 @@ export const CURTAIN_TRACK_ID = "curtain-divider";
 /** @deprecated Use PLATFORM_SCROLL_TRACK_ID from platformScrollConstants */
 export const PLATFORM_HEADING_SCROLL_ID = PLATFORM_SCROLL_TRACK_ID;
 
-/** Black copy appears once the curtain sequence has opened enough to cover the viewport. */
-const CURTAIN_CONTENT_THRESHOLD = 0.08;
+/** Content behind the curtain starts revealing once the bars open past the viewport edge. */
+const CURTAIN_REVEAL_START = 0.08;
+const CURTAIN_REVEAL_END = 0.32;
 const PROGRESS_EPSILON = 0.0005;
 
 type ScrollSnapshot = {
@@ -115,7 +116,6 @@ function updatePlatformRows(rowsProgress: number) {
     const iconBox = row.querySelector<HTMLElement>(".platform-icon-box");
     if (iconBox) {
       iconBox.style.setProperty("--row-reveal", String(reveal));
-      iconBox.style.opacity = String(reveal);
       iconBox.style.transform = `scale(${0.88 + reveal * 0.12})`;
     }
   }
@@ -149,16 +149,40 @@ function updateHighlightWords(progress: number) {
   }
 }
 
+function curtainRevealProgress(progress: number) {
+  if (progress < CURTAIN_REVEAL_START) return 0;
+  return Math.min(
+    1,
+    (progress - CURTAIN_REVEAL_START) / (CURTAIN_REVEAL_END - CURTAIN_REVEAL_START),
+  );
+}
+
+function easeOutBack(t: number) {
+  const c1 = 1.70158;
+  const c3 = c1 + 1;
+  return 1 + c3 * (t - 1) ** 3 + c1 * (t - 1) ** 2;
+}
+
 function updateCurtainContent(progress: number) {
   if (!curtainContentEl) {
     curtainContentEl = document.querySelector<HTMLElement>(
       "[data-curtain-content]",
     );
   }
-  if (curtainContentEl) {
+  if (!curtainContentEl) return;
+
+  if (getPrefersReducedMotion()) {
     curtainContentEl.style.opacity =
-      progress >= CURTAIN_CONTENT_THRESHOLD ? "1" : "0";
+      progress >= CURTAIN_REVEAL_START ? "1" : "0";
+    curtainContentEl.style.transform = "scale(1)";
+    return;
   }
+
+  const reveal = curtainRevealProgress(progress);
+  const scale = 0.92 + easeOutBack(reveal) * 0.08;
+
+  curtainContentEl.style.opacity = String(reveal);
+  curtainContentEl.style.transform = `scale(${scale})`;
 }
 
 function measure(): ScrollSnapshot {

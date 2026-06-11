@@ -2,8 +2,8 @@ import ScrollProgressRoot from "@/app/components/ScrollProgressRoot";
 import Hero from "@/app/components/sections/Hero";
 import Navbar from "@/app/components/sections/Navbar";
 import Platform from "@/app/components/sections/Platform";
-import VideoSection from "@/app/components/sections/VideoSection";
-
+import FaqSection from "@/app/components/sections/FaqSection";
+import Footer from "@/app/components/sections/footer/Footer";
 export default function Home() {
   return (
     <>
@@ -11,7 +11,8 @@ export default function Home() {
       <Navbar />
       <Hero />
       <Platform />
-      <VideoSection />
+      <FaqSection />
+      <Footer />
     </>
   );
 }

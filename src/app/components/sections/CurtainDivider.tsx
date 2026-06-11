@@ -423,7 +423,7 @@ export default function CurtainDivider({ children }: CurtainDividerProps) {
       <div className="sticky top-0 h-screen w-full overflow-hidden bg-white">
         <div
           data-curtain-content=""
-          className="absolute inset-0 bg-black opacity-0 will-change-[opacity]"
+          className="absolute inset-0 origin-center bg-black opacity-0 will-change-[opacity,transform]"
           suppressHydrationWarning
         >
           {children}

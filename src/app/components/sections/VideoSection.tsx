@@ -1,15 +1,31 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { subscribeCurtainProgress } from "@/lib/scroll/scrollProgressStore";
 
 const ACCENT_COLOR = "#60189b";
+const CURTAIN_VIDEO_PLAY_THRESHOLD = 0.12;
 
-export default function VideoSection() {
+type VideoSectionProps = {
+  behindCurtain?: boolean;
+};
+
+export default function VideoSection({ behindCurtain = false }: VideoSectionProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
+
+    if (behindCurtain) {
+      return subscribeCurtainProgress((progress) => {
+        if (progress >= CURTAIN_VIDEO_PLAY_THRESHOLD) {
+          void video.play().catch(() => undefined);
+        } else {
+          video.pause();
+        }
+      });
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -24,14 +40,22 @@ export default function VideoSection() {
 
     observer.observe(video);
     return () => observer.disconnect();
-  }, []);
+  }, [behindCurtain]);
 
   return (
     <section
       id="demo-video"
-      className="w-full bg-black px-7 py-24 font-primary text-white sm:py-32"
+      className={
+        behindCurtain
+          ? "flex min-h-screen w-full items-center bg-black px-7 py-16 font-primary text-white sm:py-20"
+          : "w-full bg-black px-7 py-24 font-primary text-white sm:py-32"
+      }
       aria-labelledby="video-section-heading"
-      style={{ contentVisibility: "auto", containIntrinsicSize: "0 900px" }}
+      style={
+        behindCurtain
+          ? undefined
+          : { contentVisibility: "auto", containIntrinsicSize: "0 900px" }
+      }
     >
       <div className="mx-auto flex w-full max-w-6xl flex-col items-center text-center">
         <h2
@@ -68,7 +92,7 @@ export default function VideoSection() {
               loop
               muted
               playsInline
-              preload="none"
+              preload={behindCurtain ? "metadata" : "none"}
               aria-label="EmergX platform demo showing the complete hiring workflow"
             >
               <source src="/video/demoVideo.mp4" type="video/mp4" />
