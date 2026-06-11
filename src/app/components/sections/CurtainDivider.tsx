@@ -1,7 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, type ReactNode } from "react";
-import { CURTAIN_TRACK_ID } from "@/lib/hooks/useNavbarTextMix";
+import {
+  CURTAIN_TRACK_ID,
+  subscribeCurtainProgress,
+} from "@/lib/scroll/scrollProgressStore";
 
 /** sui.io homepage-scroll sequence — 76 frames at 1440×900. */
 const FRAME_COUNT = 76;
@@ -258,18 +261,13 @@ export default function CurtainDivider({ children }: CurtainDividerProps) {
     });
   }, [drawFrame]);
 
-  const updateScrollProgress = useCallback(() => {
-    const track = scrollTrackRef.current;
-    if (!track) return;
-
-    const scrollDistance = track.offsetHeight - window.innerHeight;
-    scrollProgressRef.current =
-      scrollDistance > 0
-        ? Math.min(1, Math.max(0, -track.getBoundingClientRect().top / scrollDistance))
-        : 0;
-
-    scheduleDraw();
-  }, [scheduleDraw]);
+  const applyScrollProgress = useCallback(
+    (progress: number) => {
+      scrollProgressRef.current = progress;
+      scheduleDraw();
+    },
+    [scheduleDraw],
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -306,33 +304,31 @@ export default function CurtainDivider({ children }: CurtainDividerProps) {
   }, [scheduleDraw]);
 
   useEffect(() => {
-    updateScrollProgress();
-    window.addEventListener("scroll", updateScrollProgress, { passive: true });
-    window.addEventListener("resize", updateScrollProgress);
-
-    return () => {
-      window.removeEventListener("scroll", updateScrollProgress);
-      window.removeEventListener("resize", updateScrollProgress);
-      if (rafRef.current !== null) {
-        cancelAnimationFrame(rafRef.current);
-      }
-    };
-  }, [updateScrollProgress]);
+    return subscribeCurtainProgress(applyScrollProgress);
+  }, [applyScrollProgress]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const resizeObserver = new ResizeObserver(updateScrollProgress);
+    const resizeObserver = new ResizeObserver(() => {
+      scheduleDraw();
+    });
     resizeObserver.observe(canvas);
 
     return () => resizeObserver.disconnect();
-  }, [updateScrollProgress]);
+  }, [scheduleDraw]);
 
   return (
     <div id={CURTAIN_TRACK_ID} ref={scrollTrackRef} className={SCROLL_TRACK_CLASS}>
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
-        <div className="absolute inset-0 bg-black">{children}</div>
+      <div className="sticky top-0 h-screen w-full overflow-hidden bg-white">
+        <div
+          data-curtain-content=""
+          className="absolute inset-0 bg-black opacity-0 will-change-[opacity]"
+          suppressHydrationWarning
+        >
+          {children}
+        </div>
 
         <canvas
           ref={canvasRef}

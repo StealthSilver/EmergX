@@ -1,13 +1,12 @@
-"use client";
-
 import Link from "next/link";
-import { useNavbarTextMix } from "@/lib/hooks/useNavbarTextMix";
 import { siteConfig } from "@/lib/data/site.data";
 
+const textStroke =
+  "color-mix(in srgb, #000000 calc(var(--nav-text-mix, 0) * 100%), #ffffff)";
+const accentStroke =
+  "color-mix(in srgb, #000000 calc(var(--nav-text-mix, 0) * 100%), #60189B)";
+
 export default function NavbarLogo() {
-  const navTextMix = useNavbarTextMix();
-  const textStroke = `color-mix(in srgb, #000000 ${navTextMix * 100}%, #ffffff)`;
-  const accentStroke = `color-mix(in srgb, #000000 ${navTextMix * 100}%, #60189B)`;
 
   return (
     <Link

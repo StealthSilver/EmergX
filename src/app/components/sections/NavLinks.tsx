@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useCallback, useRef, useState } from "react";
-import { useNavbarTextMix } from "@/lib/hooks/useNavbarTextMix";
+
+const navTextColor =
+  "color-mix(in srgb, #000000 calc(var(--nav-text-mix, 0) * 100%), #ffffff)";
 
 const navLinks = [
   { label: "PLATFORM", href: "#platform" },
@@ -30,8 +32,6 @@ const hiddenIndicator: IndicatorStyle = {
 export default function NavLinks() {
   const listRef = useRef<HTMLUListElement>(null);
   const [indicator, setIndicator] = useState<IndicatorStyle>(hiddenIndicator);
-  const navTextMix = useNavbarTextMix();
-  const navTextColor = `color-mix(in srgb, #000000 ${navTextMix * 100}%, #ffffff)`;
 
   const moveIndicator = useCallback((target: HTMLAnchorElement) => {
     const list = listRef.current;

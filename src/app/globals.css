@@ -36,6 +36,10 @@
   --background: #ffffff;
   --foreground: #171717;
   --hero-gradient-top: #60189b;
+  --hero-scroll-progress: 0;
+  --platform-highlight-progress: 0;
+  --curtain-scroll-progress: 0;
+  --nav-text-mix: 0;
 }
 
 @theme inline {
@@ -203,6 +207,33 @@ body {
   }
 }
 
+/* Scroll-driven UI — updated on rAF without React re-renders */
+.highlight-word-bg {
+  clip-path: inset(0 calc((1 - var(--word-progress, 0)) * 100%) 0 0);
+}
+
+[data-platform-accordion] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+[data-platform-accordion].platform-accordion--ready {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.platform-accordion--ready .platform-row {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.platform-accordion--ready .platform-icon-box {
+  opacity: 1;
+  transform: scale(1);
+}
+
 /* Platform accordion — Sui-inspired layout */
 .platform-accordion {
   display: flex;
@@ -341,4 +372,27 @@ body {
 
 .platform-row-list li + li {
   margin-top: 0.5rem;
+}
+
+.video-glass-frame {
+  padding: 1px;
+  border-radius: 1.75rem;
+  background: linear-gradient(
+    145deg,
+    rgb(255 255 255 / 0.28) 0%,
+    rgb(255 255 255 / 0.06) 35%,
+    rgb(96 24 155 / 0.35) 70%,
+    rgb(255 255 255 / 0.12) 100%
+  );
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.06),
+    0 24px 80px rgb(0 0 0 / 0.55),
+    0 0 120px rgb(96 24 155 / 0.18),
+    inset 0 1px 0 rgb(255 255 255 / 0.14);
+  backdrop-filter: blur(12px);
+}
+
+.video-glass-frame__inner {
+  border-radius: calc(1.75rem - 1px);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08);
 }
