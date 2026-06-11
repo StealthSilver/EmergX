@@ -17,7 +17,7 @@ export const siteConfig = {
   ogImage: "/og-image.png",
   twitterHandle: "@EmergX",
   locale: "en_US",
-  themeColor: "#0a0a0a",
+  themeColor: "#150520",
   contact: {
     phone: "+91 91628 41781",
   },

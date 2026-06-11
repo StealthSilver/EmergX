@@ -17,7 +17,7 @@ const noiseOverlay = `url("data:image/svg+xml,${encodeURIComponent(
 export default function Hero() {
   return (
     <section
-      className="relative flex h-[100vh] min-h-[100vh] w-full flex-col overflow-hidden font-primary"
+      className="relative flex h-[100vh] min-h-[100vh] w-full flex-col overflow-hidden font-primary before:pointer-events-none before:absolute before:inset-x-0 before:bottom-full before:h-screen before:bg-[#60189B] before:content-['']"
       style={{ background: heroGradient }}
       aria-labelledby="hero-heading"
     >

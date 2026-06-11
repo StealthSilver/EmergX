@@ -1,19 +1,27 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import ScrollHighlightWord from "@/app/components/sections/ScrollHighlightWord";
-import { useElementScrollProgress } from "@/lib/hooks/useElementScrollProgress";
+import { usePlatformScroll } from "@/lib/context/PlatformScrollContext";
+import { usePinnedHighlightScrollProgress } from "@/lib/hooks/usePinnedHighlightScrollProgress";
 
 const HIGHLIGHT_WORD_COUNT = 5;
+/** Tall track keeps the heading pinned while scroll only drives word highlights. */
+const HIGHLIGHT_SCROLL_HEIGHT = "h-[250vh]";
 
 export default function PlatformScrollHero() {
   const scrollTrackRef = useRef<HTMLDivElement>(null);
-  const scrollProgress = useElementScrollProgress(scrollTrackRef);
+  const scrollProgress = usePinnedHighlightScrollProgress(scrollTrackRef);
+  const { setHighlightProgress } = usePlatformScroll();
+
+  useEffect(() => {
+    setHighlightProgress(scrollProgress);
+  }, [scrollProgress, setHighlightProgress]);
 
   return (
-    <div ref={scrollTrackRef} className="relative h-[250vh] w-full">
-      <div className="sticky top-0 flex h-screen w-full items-center justify-center">
-        <p id="platform-heading" className="w-[90%] text-4xl leading-relaxed">
+    <div ref={scrollTrackRef} className={`relative w-full ${HIGHLIGHT_SCROLL_HEIGHT}`}>
+      <div className="sticky top-0 z-20 w-full bg-white pt-40 pb-16">
+        <p id="platform-heading" className="w-[90%] text-5xl leading-tight sm:text-6xl">
           EmergX is the only platform where candidates are{" "}
           <ScrollHighlightWord
             wordIndex={0}
