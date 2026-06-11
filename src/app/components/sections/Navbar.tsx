@@ -1,6 +1,6 @@
-import Link from "next/link";
 import NavbarLogo from "@/app/components/sections/NavbarLogo";
 import NavLinks from "@/app/components/sections/NavLinks";
+import LetterWaveLink from "@/app/components/ui/LetterWaveLink";
 
 export default function Navbar() {
   return (
@@ -13,12 +13,11 @@ export default function Navbar() {
 
         <NavLinks />
 
-        <Link
+        <LetterWaveLink
           href="#request-demo"
+          label="Request Demo"
           className="request-demo-btn relative z-10 inline-flex min-w-[150px] shrink-0 items-center justify-center rounded-[6px] px-7 py-1.5 font-primary text-sm font-medium uppercase text-white transition-colors"
-        >
-          Request Demo
-        </Link>
+        />
       </nav>
     </header>
   );

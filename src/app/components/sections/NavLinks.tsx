@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import LetterWaveLink from "@/app/components/ui/LetterWaveLink";
 import { useCallback, useRef, useState } from "react";
 
 const navTextColor =
@@ -60,7 +60,7 @@ export default function NavLinks() {
     >
       <span
         aria-hidden
-        className="pointer-events-none absolute rounded-md border border-white/[0.06] bg-white/[0.02] transition-[left,width,height,opacity] duration-300 ease-out"
+        className="pointer-events-none absolute rounded-md border border-white/20 bg-white/18 backdrop-blur-sm transition-[left,width,height,opacity] duration-300 ease-out"
         style={{
           left: indicator.left,
           top: indicator.top,
@@ -75,16 +75,16 @@ export default function NavLinks() {
       >
         {navLinks.map(({ label, href }) => (
           <li key={href}>
-            <Link
+            <LetterWaveLink
               href={href}
+              label={label}
+              variant="nav"
               className="relative block px-2.5 py-1 font-primary text-sm font-light uppercase sm:px-3"
               style={{ color: navTextColor }}
               onMouseEnter={(e) => moveIndicator(e.currentTarget)}
               onFocus={(e) => moveIndicator(e.currentTarget)}
               onBlur={hideIndicator}
-            >
-              {label}
-            </Link>
+            />
           </li>
         ))}
       </ul>

@@ -1,16 +1,22 @@
 "use client";
 
+import {
+  HIGHLIGHT_SCROLL_SHARE,
+  PLATFORM_SCROLL_TRACK_ID,
+} from "@/lib/scroll/platformScrollConstants";
+
 export const CURTAIN_TRACK_ID = "curtain-divider";
-export const PLATFORM_HIGHLIGHT_TRACK_ID = "platform-highlight-track";
+/** @deprecated Use PLATFORM_SCROLL_TRACK_ID from platformScrollConstants */
+export const PLATFORM_HEADING_SCROLL_ID = PLATFORM_SCROLL_TRACK_ID;
 
 /** Black copy appears once the curtain sequence has opened enough to cover the viewport. */
 const CURTAIN_CONTENT_THRESHOLD = 0.08;
-/** Accordion reveals slightly before the last word finishes so it feels in sync. */
-const ACCORDION_REVEAL_THRESHOLD = 0.88;
+const PROGRESS_EPSILON = 0.0005;
 
 type ScrollSnapshot = {
   hero: number;
   platformHighlight: number;
+  platformRows: number;
   curtain: number;
   navTextMix: number;
 };
@@ -18,6 +24,7 @@ type ScrollSnapshot = {
 let snapshot: ScrollSnapshot = {
   hero: 0,
   platformHighlight: 0,
+  platformRows: 0,
   curtain: 0,
   navTextMix: 0,
 };
@@ -27,8 +34,95 @@ let listenerCount = 0;
 const listeners = new Set<() => void>();
 const curtainListeners = new Set<(progress: number) => void>();
 
+let highlightWordEls: HTMLElement[] | null = null;
+let platformRowEls: HTMLElement[] | null = null;
+let curtainContentEl: HTMLElement | null = null;
+let prefersReducedMotion: boolean | null = null;
+let lastPublished: ScrollSnapshot | null = null;
+
+function getPrefersReducedMotion() {
+  if (prefersReducedMotion === null) {
+    prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+  }
+  return prefersReducedMotion;
+}
+
+function getHighlightWords() {
+  if (!highlightWordEls) {
+    highlightWordEls = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-highlight-word]"),
+    );
+  }
+  return highlightWordEls;
+}
+
+function getPlatformRows() {
+  const found = Array.from(
+    document.querySelectorAll<HTMLElement>("[data-platform-row]"),
+  );
+  if (!platformRowEls || platformRowEls.length !== found.length) {
+    platformRowEls = found;
+  }
+  return platformRowEls;
+}
+
+function measurePlatformScroll(viewportHeight: number) {
+  if (getPrefersReducedMotion()) {
+    return { highlight: 1, rows: 1 };
+  }
+
+  const track = document.getElementById(PLATFORM_SCROLL_TRACK_ID);
+  if (!track) return { highlight: 0, rows: 0 };
+
+  const rect = track.getBoundingClientRect();
+  const scrollDistance = track.offsetHeight - viewportHeight;
+
+  if (rect.top > 0) return { highlight: 0, rows: 0 };
+  if (scrollDistance <= 0) return { highlight: 1, rows: 1 };
+
+  const progress = Math.min(1, Math.max(0, -rect.top / scrollDistance));
+  const highlight = Math.min(1, progress / HIGHLIGHT_SCROLL_SHARE);
+  const rows =
+    progress <= HIGHLIGHT_SCROLL_SHARE
+      ? 0
+      : Math.min(
+          1,
+          (progress - HIGHLIGHT_SCROLL_SHARE) / (1 - HIGHLIGHT_SCROLL_SHARE),
+        );
+
+  return { highlight, rows };
+}
+
+function updatePlatformRows(rowsProgress: number) {
+  const rows = getPlatformRows();
+  const count = rows.length || 1;
+
+  for (const [index, row] of rows.entries()) {
+    const segmentSize = 1 / count;
+    const segmentStart = index * segmentSize;
+    const reveal = Math.min(
+      1,
+      Math.max(0, (rowsProgress - segmentStart) / segmentSize),
+    );
+
+    row.style.setProperty("--row-reveal", String(reveal));
+    row.style.opacity = String(reveal);
+    row.style.transform = `translateY(${(1 - reveal) * 20}px)`;
+    row.style.pointerEvents = reveal > 0.02 ? "" : "none";
+
+    const iconBox = row.querySelector<HTMLElement>(".platform-icon-box");
+    if (iconBox) {
+      iconBox.style.setProperty("--row-reveal", String(reveal));
+      iconBox.style.opacity = String(reveal);
+      iconBox.style.transform = `scale(${0.88 + reveal * 0.12})`;
+    }
+  }
+}
+
 function getWordProgress(
-  scrollProgress: number,
+  highlightProgress: number,
   wordIndex: number,
   totalWords: number,
 ) {
@@ -36,13 +130,13 @@ function getWordProgress(
   const segmentStart = wordIndex * segmentSize;
   return Math.min(
     1,
-    Math.max(0, (scrollProgress - segmentStart) / segmentSize),
+    Math.max(0, (highlightProgress - segmentStart) / segmentSize),
   );
 }
 
 function updateHighlightWords(progress: number) {
-  const words = document.querySelectorAll<HTMLElement>("[data-highlight-word]");
-  words.forEach((el) => {
+  const words = getHighlightWords();
+  for (const el of words) {
     const index = Number(el.dataset.highlightWord);
     const total = Number(el.dataset.highlightTotal) || 5;
     const wordProgress = getWordProgress(progress, index, total);
@@ -52,23 +146,18 @@ function updateHighlightWords(progress: number) {
     if (text) {
       text.style.color = wordProgress > 0.45 ? "#ffffff" : "#111827";
     }
-  });
-}
-
-function updatePlatformAccordion(progress: number) {
-  const accordion = document.querySelector("[data-platform-accordion]");
-  if (accordion) {
-    accordion.classList.toggle(
-      "platform-accordion--ready",
-      progress >= ACCORDION_REVEAL_THRESHOLD,
-    );
   }
 }
 
 function updateCurtainContent(progress: number) {
-  const content = document.querySelector<HTMLElement>("[data-curtain-content]");
-  if (content) {
-    content.style.opacity = progress >= CURTAIN_CONTENT_THRESHOLD ? "1" : "0";
+  if (!curtainContentEl) {
+    curtainContentEl = document.querySelector<HTMLElement>(
+      "[data-curtain-content]",
+    );
+  }
+  if (curtainContentEl) {
+    curtainContentEl.style.opacity =
+      progress >= CURTAIN_CONTENT_THRESHOLD ? "1" : "0";
   }
 }
 
@@ -79,24 +168,9 @@ function measure(): ScrollSnapshot {
       ? Math.min(1, Math.max(0, window.scrollY / viewportHeight))
       : 0;
 
-  const prefersReducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)",
-  ).matches;
-
-  let platformHighlight = prefersReducedMotion ? 1 : 0;
-  const platformTrack = document.getElementById(PLATFORM_HIGHLIGHT_TRACK_ID);
-  if (platformTrack && !prefersReducedMotion) {
-    const rect = platformTrack.getBoundingClientRect();
-    const scrollDistance = platformTrack.offsetHeight - viewportHeight;
-
-    if (rect.top > 0) {
-      platformHighlight = 0;
-    } else if (scrollDistance <= 0) {
-      platformHighlight = 1;
-    } else {
-      platformHighlight = Math.min(1, Math.max(0, -rect.top / scrollDistance));
-    }
-  }
+  const platform = measurePlatformScroll(viewportHeight);
+  const platformHighlight = platform.highlight;
+  const platformRows = platform.rows;
 
   let curtain = 0;
   let curtainNavWhite = false;
@@ -114,28 +188,54 @@ function measure(): ScrollSnapshot {
   return {
     hero,
     platformHighlight,
+    platformRows,
     curtain,
     navTextMix: curtainNavWhite ? 0 : hero,
   };
 }
 
+function progressChanged(a: number, b: number) {
+  return Math.abs(a - b) > PROGRESS_EPSILON;
+}
+
 function publish(next: ScrollSnapshot) {
+  const prev = lastPublished;
   snapshot = next;
+  lastPublished = next;
 
   const root = document.documentElement;
-  root.style.setProperty("--hero-scroll-progress", String(next.hero));
-  root.style.setProperty(
-    "--platform-highlight-progress",
-    String(next.platformHighlight),
-  );
-  root.style.setProperty("--curtain-scroll-progress", String(next.curtain));
-  root.style.setProperty("--nav-text-mix", String(next.navTextMix));
 
-  updateHighlightWords(next.platformHighlight);
-  updatePlatformAccordion(next.platformHighlight);
-  updateCurtainContent(next.curtain);
+  if (!prev || progressChanged(prev.hero, next.hero)) {
+    root.style.setProperty("--hero-scroll-progress", String(next.hero));
+  }
 
-  curtainListeners.forEach((listener) => listener(next.curtain));
+  if (
+    !prev ||
+    progressChanged(prev.platformHighlight, next.platformHighlight) ||
+    progressChanged(prev.platformRows, next.platformRows)
+  ) {
+    root.style.setProperty(
+      "--platform-highlight-progress",
+      String(next.platformHighlight),
+    );
+    root.style.setProperty(
+      "--platform-rows-progress",
+      String(next.platformRows),
+    );
+    updateHighlightWords(next.platformHighlight);
+    updatePlatformRows(next.platformRows);
+  }
+
+  if (!prev || progressChanged(prev.curtain, next.curtain)) {
+    root.style.setProperty("--curtain-scroll-progress", String(next.curtain));
+    updateCurtainContent(next.curtain);
+    curtainListeners.forEach((listener) => listener(next.curtain));
+  }
+
+  if (!prev || progressChanged(prev.navTextMix, next.navTextMix)) {
+    root.style.setProperty("--nav-text-mix", String(next.navTextMix));
+  }
+
   listeners.forEach((listener) => listener());
 }
 
@@ -170,12 +270,21 @@ function detach() {
   }
 }
 
+function invalidateDomCache() {
+  highlightWordEls = null;
+  platformRowEls = null;
+  curtainContentEl = null;
+  lastPublished = null;
+}
+
 export function initScrollProgress() {
+  invalidateDomCache();
   attach();
   scheduleMeasure();
 
   return () => {
     detach();
+    invalidateDomCache();
   };
 }
 

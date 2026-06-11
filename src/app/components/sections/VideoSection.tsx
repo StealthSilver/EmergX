@@ -1,11 +1,37 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+
 const ACCENT_COLOR = "#60189b";
 
 export default function VideoSection() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          void video.play().catch(() => undefined);
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.25 },
+    );
+
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section
       id="demo-video"
       className="w-full bg-black px-7 py-24 font-primary text-white sm:py-32"
       aria-labelledby="video-section-heading"
+      style={{ contentVisibility: "auto", containIntrinsicSize: "0 900px" }}
     >
       <div className="mx-auto flex w-full max-w-6xl flex-col items-center text-center">
         <h2
@@ -37,12 +63,12 @@ export default function VideoSection() {
           />
           <div className="video-glass-frame__inner relative overflow-hidden rounded-[1.65rem]">
             <video
+              ref={videoRef}
               className="block aspect-video w-full object-cover"
-              autoPlay
               loop
               muted
               playsInline
-              preload="metadata"
+              preload="none"
               aria-label="EmergX platform demo showing the complete hiring workflow"
             >
               <source src="/video/demoVideo.mp4" type="video/mp4" />

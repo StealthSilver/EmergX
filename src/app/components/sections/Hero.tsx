@@ -1,5 +1,5 @@
-import Link from "next/link";
 import LogoTicker from "@/app/components/sections/LogoTicker";
+import LetterWaveLink from "@/app/components/ui/LetterWaveLink";
 import { trustedByHeading } from "@/lib/data/hero.data";
 
 const heroGradient =
@@ -47,18 +47,16 @@ export default function Hero() {
         </p>
 
         <div className="mt-12 flex flex-col items-center gap-4 sm:mt-14 sm:flex-row sm:justify-center">
-          <Link
+          <LetterWaveLink
             href="#request-demo"
+            label="Request Demo"
             className="request-demo-btn inline-flex min-w-[180px] items-center justify-center rounded-md px-8 py-3.5 font-primary text-sm font-medium uppercase text-white transition-colors"
-          >
-            Request Demo
-          </Link>
-          <Link
+          />
+          <LetterWaveLink
             href="#for-candidates"
+            label="For Candidates"
             className="inline-flex min-w-[180px] items-center justify-center rounded-md border border-white/25 bg-white/20 px-8 py-3.5 font-primary text-sm font-medium uppercase tracking-wide text-white backdrop-blur-sm transition-colors hover:bg-white/30"
-          >
-            For Candidates
-          </Link>
+          />
         </div>
 
         <div className="mt-48 w-full sm:mt-52 md:mt-56">

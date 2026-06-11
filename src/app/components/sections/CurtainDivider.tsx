@@ -8,13 +8,14 @@ import {
 
 /** sui.io homepage-scroll sequence — 76 frames at 1440×900. */
 const FRAME_COUNT = 76;
+/** Half-width delivery — faster decode + recolor, upscaled smoothly on draw. */
 const FRAME_BASE =
-  "https://res.cloudinary.com/dp6m7thfm/image/upload/sequences/homepage-scroll";
+  "https://res.cloudinary.com/dp6m7thfm/image/upload/w_960,q_auto,f_webp/sequences/homepage-scroll";
 /** Scroll distance matches sui.io's 2315px seqtrigger zone. */
 const SCROLL_TRACK_CLASS = "relative h-[2315px] w-full";
 
-/** Upscale before FX so bars stay crisp on large screens. */
-const PREPROCESS_SCALE = 2;
+const PREPROCESS_SCALE = 1;
+const MAX_DPR = 1.5;
 
 /** EmergX metallic purple palette. */
 const PURPLE_DARK = { r: 18, g: 4, b: 52 };
@@ -55,7 +56,6 @@ function isPurpleBarPixel(r: number, g: number, b: number) {
   return b > g + 8 && r > g + 4;
 }
 
-/** Remap blue curtain pixels to accent purple; blacks and neutrals stay untouched. */
 function recolorBlueToAccent(imageData: ImageData) {
   const data = imageData.data;
 
@@ -93,10 +93,6 @@ function recolorBlueToAccent(imageData: ImageData) {
   }
 }
 
-/**
- * Smooth cylindrical metal shading per vertical bar column.
- * Column-based (not per-row) to avoid horizontal slit / banding artifacts.
- */
 function applyMetallicPurpleBars(imageData: ImageData) {
   const { data, width, height } = imageData;
 
@@ -160,14 +156,12 @@ function applyMetallicPurpleBars(imageData: ImageData) {
 
 function processFrame(source: HTMLImageElement): HTMLCanvasElement {
   const canvas = document.createElement("canvas");
-  canvas.width = source.naturalWidth * PREPROCESS_SCALE;
-  canvas.height = source.naturalHeight * PREPROCESS_SCALE;
+  canvas.width = Math.round(source.naturalWidth * PREPROCESS_SCALE);
+  canvas.height = Math.round(source.naturalHeight * PREPROCESS_SCALE);
 
   const ctx = canvas.getContext("2d");
   if (!ctx) return canvas;
 
-  ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = "high";
   ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
 
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -178,21 +172,21 @@ function processFrame(source: HTMLImageElement): HTMLCanvasElement {
   return canvas;
 }
 
-async function preprocessFrames(
-  images: HTMLImageElement[],
-): Promise<HTMLCanvasElement[]> {
-  const processed: HTMLCanvasElement[] = [];
+function frameIndexForProgress(progress: number) {
+  return Math.min(
+    FRAME_COUNT - 1,
+    Math.max(0, Math.floor(progress * (FRAME_COUNT - 1))),
+  );
+}
 
-  for (let i = 0; i < images.length; i++) {
-    processed.push(processFrame(images[i]));
-    if (i % 3 === 2) {
-      await new Promise<void>((resolve) => {
-        requestAnimationFrame(() => resolve());
-      });
+function waitForIdle(timeout = 32) {
+  return new Promise<void>((resolve) => {
+    if ("requestIdleCallback" in window) {
+      requestIdleCallback(() => resolve(), { timeout });
+    } else {
+      setTimeout(resolve, 0);
     }
-  }
-
-  return processed;
+  });
 }
 
 type CurtainDividerProps = {
@@ -201,33 +195,103 @@ type CurtainDividerProps = {
 
 /**
  * sui.io curtain divider — scroll-scrubbed canvas image sequence.
- * Frames are recolored to EmergX purple once at load; scroll only blits.
+ * Purple recolor runs off the scroll path; draw only blits cached frames.
  */
 export default function CurtainDivider({ children }: CurtainDividerProps) {
   const scrollTrackRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const processedFramesRef = useRef<HTMLCanvasElement[]>([]);
+  const sourceImagesRef = useRef<HTMLImageElement[]>([]);
+  const processedFramesRef = useRef<Map<number, HTMLCanvasElement>>(new Map());
   const scrollProgressRef = useRef(0);
   const canvasSizeRef = useRef({ width: 0, height: 0 });
   const rafRef = useRef<number | null>(null);
   const framesReadyRef = useRef(false);
+  const lastFrameIndexRef = useRef(-1);
+  const processingRef = useRef(false);
+  const preloadQueueRef = useRef<number[]>([]);
+  const cancelledRef = useRef(false);
+  const currentFrameRef = useRef(0);
 
-  const drawFrame = useCallback((progress: number) => {
+  const enqueuePreload = useCallback((indices: number[]) => {
+    const queue = preloadQueueRef.current;
+    for (const index of indices) {
+      if (index < 0 || index >= FRAME_COUNT) continue;
+      if (processedFramesRef.current.has(index)) continue;
+      if (queue.includes(index)) continue;
+      queue.push(index);
+    }
+
+    if (processingRef.current) return;
+
+    processingRef.current = true;
+    cancelledRef.current = false;
+
+    const drain = async () => {
+      const images = sourceImagesRef.current;
+      const cache = processedFramesRef.current;
+
+      while (preloadQueueRef.current.length > 0 && !cancelledRef.current) {
+        const pivot = currentFrameRef.current;
+        preloadQueueRef.current.sort(
+          (a, b) => Math.abs(a - pivot) - Math.abs(b - pivot),
+        );
+
+        const index = preloadQueueRef.current.shift();
+        if (index === undefined) break;
+        if (cache.has(index)) continue;
+
+        const source = images[index];
+        if (!source?.complete || source.naturalWidth === 0) {
+          preloadQueueRef.current.push(index);
+          await waitForIdle(16);
+          continue;
+        }
+
+        cache.set(index, processFrame(source));
+
+        if (index === currentFrameRef.current) {
+          lastFrameIndexRef.current = -1;
+          scheduleDrawRef.current?.();
+        }
+
+        await waitForIdle();
+      }
+
+      processingRef.current = false;
+
+      if (preloadQueueRef.current.length > 0 && !cancelledRef.current) {
+        processingRef.current = true;
+        void drain();
+      }
+    };
+
+    void drain();
+  }, []);
+
+  const scheduleDrawRef = useRef<(() => void) | null>(null);
+
+  const drawFrame = useCallback((progress: number, force = false) => {
     const canvas = canvasRef.current;
-    const frames = processedFramesRef.current;
-    if (!canvas || !framesReadyRef.current || frames.length === 0) return;
+    const images = sourceImagesRef.current;
+    if (!canvas || !framesReadyRef.current || images.length === 0) return;
 
-    const frameIndex = Math.min(
-      FRAME_COUNT - 1,
-      Math.round(progress * (FRAME_COUNT - 1)),
-    );
-    const frame = frames[frameIndex];
-    if (!frame) return;
+    const frameIndex = frameIndexForProgress(progress);
+    currentFrameRef.current = frameIndex;
 
-    const ctx = canvas.getContext("2d");
+    if (!force && frameIndex === lastFrameIndexRef.current) return;
+    lastFrameIndexRef.current = frameIndex;
+
+    const cache = processedFramesRef.current;
+    const processed = cache.get(frameIndex);
+    const source = images[frameIndex];
+
+    const ctx = canvas.getContext("2d", {
+      alpha: true,
+      desynchronized: true,
+    } as CanvasRenderingContext2DSettings);
     if (!ctx) return;
 
-    const dpr = window.devicePixelRatio || 1;
+    const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
     const displayWidth = canvas.clientWidth;
     const displayHeight = canvas.clientHeight;
 
@@ -244,13 +308,31 @@ export default function CurtainDivider({ children }: CurtainDividerProps) {
       canvas.height = pixelHeight;
       canvasSizeRef.current = { width: pixelWidth, height: pixelHeight };
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      lastFrameIndexRef.current = -1;
     }
 
     ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = "high";
-    ctx.clearRect(0, 0, displayWidth, displayHeight);
-    ctx.drawImage(frame, 0, 0, displayWidth, displayHeight);
-  }, []);
+    ctx.imageSmoothingQuality = "medium";
+
+    const bitmap = processed ?? (source?.complete ? source : null);
+    if (!bitmap) return;
+
+    ctx.drawImage(bitmap, 0, 0, displayWidth, displayHeight);
+
+    if (!processed) {
+      enqueuePreload([frameIndex]);
+    }
+
+    enqueuePreload([
+      frameIndex,
+      frameIndex - 1,
+      frameIndex + 1,
+      frameIndex - 2,
+      frameIndex + 2,
+      frameIndex - 3,
+      frameIndex + 3,
+    ]);
+  }, [enqueuePreload]);
 
   const scheduleDraw = useCallback(() => {
     if (rafRef.current !== null) return;
@@ -261,6 +343,8 @@ export default function CurtainDivider({ children }: CurtainDividerProps) {
     });
   }, [drawFrame]);
 
+  scheduleDrawRef.current = scheduleDraw;
+
   const applyScrollProgress = useCallback(
     (progress: number) => {
       scrollProgressRef.current = progress;
@@ -270,16 +354,17 @@ export default function CurtainDivider({ children }: CurtainDividerProps) {
   );
 
   useEffect(() => {
-    let cancelled = false;
+    cancelledRef.current = false;
     const images: HTMLImageElement[] = new Array(FRAME_COUNT);
     let loaded = 0;
 
-    const onAllLoaded = async () => {
-      if (cancelled) return;
-      const processed = await preprocessFrames(images);
-      if (cancelled) return;
-      processedFramesRef.current = processed;
+    const markFramesReady = () => {
+      if (cancelledRef.current || framesReadyRef.current) return;
       framesReadyRef.current = true;
+      lastFrameIndexRef.current = -1;
+      enqueuePreload(
+        Array.from({ length: FRAME_COUNT }, (_, index) => index),
+      );
       scheduleDraw();
     };
 
@@ -289,19 +374,28 @@ export default function CurtainDivider({ children }: CurtainDividerProps) {
       img.decoding = "async";
       img.src = frameUrl(i);
       img.onload = () => {
-        if (cancelled) return;
+        if (cancelledRef.current) return;
         loaded += 1;
-        if (loaded === FRAME_COUNT) {
-          void onAllLoaded();
+        if (loaded === 1) {
+          markFramesReady();
         }
+        enqueuePreload([i, i + 1, i - 1]);
       };
       images[i] = img;
     }
 
+    sourceImagesRef.current = images;
+
     return () => {
-      cancelled = true;
+      cancelledRef.current = true;
+      processingRef.current = false;
+      preloadQueueRef.current = [];
+      processedFramesRef.current.clear();
+      sourceImagesRef.current = [];
+      framesReadyRef.current = false;
+      lastFrameIndexRef.current = -1;
     };
-  }, [scheduleDraw]);
+  }, [enqueuePreload, scheduleDraw]);
 
   useEffect(() => {
     return subscribeCurtainProgress(applyScrollProgress);
@@ -312,6 +406,7 @@ export default function CurtainDivider({ children }: CurtainDividerProps) {
     if (!canvas) return;
 
     const resizeObserver = new ResizeObserver(() => {
+      lastFrameIndexRef.current = -1;
       scheduleDraw();
     });
     resizeObserver.observe(canvas);
@@ -320,7 +415,11 @@ export default function CurtainDivider({ children }: CurtainDividerProps) {
   }, [scheduleDraw]);
 
   return (
-    <div id={CURTAIN_TRACK_ID} ref={scrollTrackRef} className={SCROLL_TRACK_CLASS}>
+    <div
+      id={CURTAIN_TRACK_ID}
+      ref={scrollTrackRef}
+      className={SCROLL_TRACK_CLASS}
+    >
       <div className="sticky top-0 h-screen w-full overflow-hidden bg-white">
         <div
           data-curtain-content=""
@@ -332,7 +431,7 @@ export default function CurtainDivider({ children }: CurtainDividerProps) {
 
         <canvas
           ref={canvasRef}
-          className="pointer-events-none absolute inset-0 h-full w-full"
+          className="pointer-events-none absolute inset-0 h-full w-full will-change-[contents]"
           aria-hidden
         />
       </div>
